@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membership Table</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style>
+    #popupMessage {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 9999;
+    }
+</style>
+</head>
+<body>
+
+<div class="navbar"><h2>Mess-Membership Table</h2></div>
+<div class="main-pic"></div>
+<table id="membershipTable">
+    <tr>
+        <th>Name</th>
+        <th>Join Date</th>
+        <th>Expiry Date</th>
+        <th>Action</th>
+    </tr>
+    <tr>
+        <td><input type="text" name="name[]" /></td>
+        <td><input type="date" name="joinDate[]" /></td>
+        <td><input type="date" name="expiryDate[]" /></td>
+        <td><button onclick="removeRow(this)">Remove</button></td>
+    </tr>
+</table>
+
+<button onclick="addRow()">Add Another Row</button>
+<button onclick="saveData()">Save Data</button>
+
+<div id="popupMessage"></div>
+
+<script>
+    function addRow() {
+        var table = document.getElementById("membershipTable");
+        var row = table.insertRow(-1);
+        var nameCell = row.insertCell(0);
+        var joinDateCell = row.insertCell(1);
+        var expiryDateCell = row.insertCell(2);
+        var actionCell = row.insertCell(3);
+        nameCell.innerHTML = '<input type="text" name="name[]" />';
+        joinDateCell.innerHTML = '<input type="date" name="joinDate[]" />';
+        expiryDateCell.innerHTML = '<input type="date" name="expiryDate[]" />';
+        actionCell.innerHTML = '<button onclick="removeRow(this)">Remove</button>';
+    }
+
+    function removeRow(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    function saveData() {
+        var tableRows = document.querySelectorAll("#membershipTable tr");
+        var data = [];
+
+        tableRows.forEach(function(row) {
+            var rowData = {};
+            var inputs = row.querySelectorAll("input");
+            inputs.forEach(function(input) {
+                rowData[input.name] = input.value;
+            });
+            data.push(rowData);
+        });
+
+        localStorage.setItem("membershipData", JSON.stringify(data));
+        showPopupMessage("Data saved successfully.");
+    }
+
+    function showPopupMessage(message) {
+        var popup = document.getElementById("popupMessage");
+        popup.textContent = message;
+        popup.style.display = "block";
+        setTimeout(function() {
+            popup.style.display = "none";
+        }, 3000); // Hide popup after 3 seconds
+    }
+
+    window.onload = function() {
+        var savedData = localStorage.getItem("membershipData");
+        if (savedData) {
+            var table = document.getElementById("membershipTable");
+            table.innerHTML = ""; // Clear existing rows
+            var data = JSON.parse(savedData);
+            data.forEach(function(rowData) {
+                var row = table.insertRow(-1);
+                var nameCell = row.insertCell(0);
+                var joinDateCell = row.insertCell(1);
+                var expiryDateCell = row.insertCell(2);
+                var actionCell = row.insertCell(3);
+                nameCell.innerHTML = '<input type="text" name="name[]" value="' + rowData['name[]'] + '" />';
+                joinDateCell.innerHTML = '<input type="date" name="joinDate[]" value="' + rowData['joinDate[]'] + '" />';
+                expiryDateCell.innerHTML = '<input type="date" name="expiryDate[]" value="' + rowData['expiryDate[]'] + '" />';
+                actionCell.innerHTML = '<button onclick="removeRow(this)">Remove</button>';
+            });
+        }
+    };
+</script>
+
+</body>
+</html>
