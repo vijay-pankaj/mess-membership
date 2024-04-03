@@ -19,7 +19,7 @@ body {
     }
     .main-pic{
         width: 100%;
-        /*background-color: red;*/
+        background-color: red;
         height: 400px;
         background-image: url("vegetable.png");
         background-size:auto;
